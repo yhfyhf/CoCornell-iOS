@@ -1,0 +1,20 @@
+{
+  "name": "CoCornellApp",
+  "version": "0.0.1",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/CoCornell/CoCornell-iOS.git"
+  },
+  "description": "iOS app for CoCornell built with React-native.",
+  "private": true,
+  "scripts": {
+    "start": "node node_modules/react-native/local-cli/cli.js start"
+  },
+  "dependencies": {
+    "react": "15.1.0",
+    "react-native": "0.28.0",
+    "tcomb-form-native": "^0.5.1"
+  },
+  "author": "Haofei Ying",
+  "license": "IDC(I Don't Care)"
+}
