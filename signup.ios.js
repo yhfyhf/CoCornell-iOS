@@ -10,12 +10,14 @@ import {
   Linking,
 } from 'react-native';
 
+var Signin = require('./signin.ios');
 var t = require('tcomb-form-native');
 var Form = t.form.Form;
 
 var User = t.struct({
   netid: t.String,
-  password: t.String
+  password: t.String,
+  name: t.String,
 });
 
 class Signup extends Component {
@@ -27,26 +29,59 @@ class Signup extends Component {
   onPress() {
     var value = this.refs.form.getValue();
     if (value) {
-      this.post(value.netid, value.password)
+      this.post(value.netid, value.password, value.name);
     }
   }
 
-  post(netid, password) {
+  post(netid, password, name) {
     var payload = {
       netid: netid,
-      password: password
+      password: password,
+      name: name,
     };
 
     var data = new FormData();
-    data.append( "netid", netid);
-    data.append( "password", password);
+    data.append("netid", netid);
+    data.append("password", password);
+    data.append("name", name);
 
-    fetch('http://localhost:5000/signin2/', {
+    var p = this;
+
+    fetch('http://localhost:5000/api/signup/', {
       method: 'POST',
       body: data
     }).then(function(response) {
-      console.log(response.json());
+      if (response.status == 200) {
+        response.json().then(function(data) {
+          if (data["status"] == "OK") {
+            p.props.navigator.push({
+              title: 'Signin',
+              navigationBarHidden: true,
+              component: Signin,
+              passProps: {
+                netid: data.user.netid,
+                message: "Sign up successfully.",
+              },
+            });
+          } else {
+            p.showErrorMessage(data["message"]);
+          }
+        });
+      } else {   // response.status != 200
+        response.json().then(function(data) {
+          console.log(data);
+          if (data["message"]) {
+            p.showErrorMessage(data["message"]);
+          } else {
+            p.showErrorMessage("Network error. Please try again.");
+          }
+        });
+      }
     })
+  }
+
+  showErrorMessage(errorMessage) {
+    alert(errorMessage);
   }
 
   render() {

@@ -10,6 +10,7 @@ import {
   Linking,
 } from 'react-native';
 
+var Boards = require('./boards.ios');
 var t = require('tcomb-form-native');
 var Form = t.form.Form;
 
@@ -22,13 +23,18 @@ var User = t.struct({
 class Signin extends Component {
   constructor(props) {
     super(props);
+    this.state = {
+      value: {
+        netid: this.props.netid,
+      },
+    };
     this.onPress = this.onPress.bind(this);
   }
 
   onPress() {
     var value = this.refs.form.getValue();
     if (value) {
-      this.post(value.netid, value.password, value.remember_me)
+      this.post(value.netid, value.password, value.remember_me);
     }
   }
 
@@ -38,21 +44,49 @@ class Signin extends Component {
     data.append("password", password);
     data.append("remember_me", remember_me);
 
+    var p = this;
+
     fetch('http://localhost:5000/signin2/', {
       method: 'POST',
       body: data
     }).then(function(response) {
-      console.log(response.json());
+      if (response.status == 200) {
+        response.json().then(function(data) {
+          if (data["status"] == "OK") {
+            p.props.navigator.push({
+              title: 'Boards',
+              navigationBarHidden: true,
+              component: Boards,
+            });
+          } else {
+            p.showErrorMessage(data["message"]);
+          }
+        });
+      } else {   // response.status != 200
+        response.json().then(function(data) {
+          if (data["message"]) {
+            p.showErrorMessage(data["message"]);
+          } else {
+            p.showErrorMessage("Network error. Please try again.");
+          }
+        });
+      }
     })
+  }
+
+  showErrorMessage(errorMessage) {
+    alert(errorMessage);
   }
 
   render() {
     return (
       <View style={styles.main} >
-        <Text style={styles.heading}>CoCornell</Text>
+        <Text style={styles.heading}>CoCornell{'\n'}</Text>
+        <Text>{this.props.message}{'\n'}</Text>
         <Form
           ref="form"
           type={User}
+          value={this.state.value}
         />
         <TouchableHighlight style={styles.loginButton}>
           <Text style={styles.loginText} onPress={this.onPress}>
