@@ -13,6 +13,7 @@ import {
 
 var Config = require('./config');
 var Boards = require('./boards.ios');
+var base64 = require('base-64');
 var t = require('tcomb-form-native');
 var Form = t.form.Form;
 
@@ -52,7 +53,7 @@ class Signin extends Component {
     await fetch(Config.serverAddress + "api/token/", {
       method: 'GET',
       headers: {
-        'Authorization': 'Basic '+btoa(netid + ':' + password)
+        'Authorization': 'Basic ' + base64.encode(netid + ':' + password),
       },
     }).then(function(response) {
       if (response.status == 200) {

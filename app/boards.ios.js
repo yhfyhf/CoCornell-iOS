@@ -13,6 +13,7 @@ import {
 } from 'react-native';
 
 var Config = require('./config');
+var base64 = require('base-64');
 
 const ACCESS_TOKEN = Config.ACCESS_TOKEN;
 
@@ -40,7 +41,7 @@ class Boards extends Component {
     fetch(Config.serverAddress + "api/board/", {
       method: 'GET',
       headers: {
-        'Authorization': 'Basic '+btoa(token + ':unused')
+        'Authorization': 'Basic ' + base64.encode(token + ':unused'),
       },
     }).then(function(response) {
       if (response.status == 200) {

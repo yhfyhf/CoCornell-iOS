@@ -11,6 +11,7 @@
     "start": "node node_modules/react-native/local-cli/cli.js start"
   },
   "dependencies": {
+    "base-64": "^0.1.0",
     "react": "15.1.0",
     "react-native": "0.28.0",
     "tcomb-form-native": "^0.5.1"
