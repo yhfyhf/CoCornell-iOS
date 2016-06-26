@@ -82,7 +82,7 @@ class Home extends Component {
 
     return (
       <Image
-        source={require('./images/background-photo-mobile-devices.jpg')}
+        source={require('../images/background-photo-mobile-devices.jpg')}
         style={styles.backgroundImage}
       >
 

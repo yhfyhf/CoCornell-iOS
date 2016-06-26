@@ -10,43 +10,44 @@ import {
   Linking,
 } from 'react-native';
 
-var Boards = require('./boards.ios');
+var Config = require('./config');
+var Signin = require('./signin.ios');
 var t = require('tcomb-form-native');
 var Form = t.form.Form;
 
 var User = t.struct({
   netid: t.String,
   password: t.String,
-  remember_me: t.Boolean
+  name: t.String,
 });
 
-class Signin extends Component {
+class Signup extends Component {
   constructor(props) {
     super(props);
-    this.state = {
-      value: {
-        netid: this.props.netid,
-      },
-    };
-    this.onPress = this.onPress.bind(this);
   }
 
   onPress() {
     var value = this.refs.form.getValue();
     if (value) {
-      this.post(value.netid, value.password, value.remember_me);
+      this.post(value.netid, value.password, value.name);
     }
   }
 
-  post(netid, password, remember_me) {
+  post(netid, password, name) {
+    var payload = {
+      netid: netid,
+      password: password,
+      name: name,
+    };
+
     var data = new FormData();
     data.append("netid", netid);
     data.append("password", password);
-    data.append("remember_me", remember_me);
+    data.append("name", name);
 
     var p = this;
 
-    fetch('http://localhost:5000/signin2/', {
+    fetch(Config.serverAddress + 'api/signup/', {
       method: 'POST',
       body: data
     }).then(function(response) {
@@ -54,9 +55,13 @@ class Signin extends Component {
         response.json().then(function(data) {
           if (data["status"] == "OK") {
             p.props.navigator.push({
-              title: 'Boards',
+              title: 'Signin',
               navigationBarHidden: true,
-              component: Boards,
+              component: Signin,
+              passProps: {
+                netid: data.user.netid,
+                message: "Sign up successfully.",
+              },
             });
           } else {
             p.showErrorMessage(data["message"]);
@@ -64,6 +69,7 @@ class Signin extends Component {
         });
       } else {   // response.status != 200
         response.json().then(function(data) {
+          console.log(data);
           if (data["message"]) {
             p.showErrorMessage(data["message"]);
           } else {
@@ -71,7 +77,9 @@ class Signin extends Component {
           }
         });
       }
-    })
+    }).catch(error => {
+      p.showErrorMessage("Network error. Please try again.");
+    });
   }
 
   showErrorMessage(errorMessage) {
@@ -79,18 +87,25 @@ class Signin extends Component {
   }
 
   render() {
+    var options = {
+      fields: {
+        password: {
+            secureTextEntry: true,
+        }
+      }
+    }
+
     return (
       <View style={styles.main} >
-        <Text style={styles.heading}>CoCornell{'\n'}</Text>
-        <Text>{this.props.message}{'\n'}</Text>
+        <Text style={styles.heading}>CoCornell</Text>
         <Form
           ref="form"
           type={User}
-          value={this.state.value}
+          options={options}
         />
         <TouchableHighlight style={styles.loginButton}>
-          <Text style={styles.loginText} onPress={this.onPress}>
-            Login
+          <Text style={styles.loginText} onPress={this.onPress.bind(this)}>
+            Sign up
           </Text>
         </TouchableHighlight>
 
@@ -138,4 +153,4 @@ const styles = StyleSheet.create({
   },
 });
 
-module.exports = Signin;
+module.exports = Signup;
