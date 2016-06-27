@@ -24,6 +24,7 @@ class CoCornellApp extends Component {
           title: "Home",
           navigationBarHidden: true,
           component: Home,
+          // component: Boards,   // FOR TEST
         }}
       />
     );

@@ -14,6 +14,7 @@
     "base-64": "^0.1.0",
     "react": "15.1.0",
     "react-native": "0.28.0",
+    "react-native-search-bar": "^2.11.0",
     "tcomb-form-native": "^0.5.1"
   },
   "author": "Haofei Ying",

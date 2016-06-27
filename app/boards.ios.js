@@ -14,6 +14,7 @@ import {
 
 var Config = require('./config');
 var base64 = require('base-64');
+var SearchBar = require('react-native-search-bar');
 
 const ACCESS_TOKEN = Config.ACCESS_TOKEN;
 
@@ -32,7 +33,7 @@ class Boards extends Component {
       p.getBoards(token);
     });
     // FOR TEST
-    // p.getBoards("eyJhbGciOiJIUzI1NiIsImV4cCI6MTQ2NjkyOTU1MSwiaWF0IjoxNDY2OTIzNTUxfQ.eyJuZXRpZCI6Imh5NDU2In0.y6BX9rQbDjwQUX-VnDkqwigKobkXfZoTYv4fYbNdPBM");
+    // p.getBoards("eyJhbGciOiJIUzI1NiIsImV4cCI6MTQ2NzAxMzg4NCwiaWF0IjoxNDY3MDA3ODg0fQ.eyJuZXRpZCI6Imh5NDU2In0.Zpd6-Gvyq9wRKIF7Sg7SQzSqmUFslaYFjywZi9_IoNk");
   }
 
   getBoards(token) {
@@ -64,8 +65,11 @@ class Boards extends Component {
    */
   renderBoard(board) {
     return (
-      <TouchableHighlight key={board.id} style={styles.boardButton}>
-        <Text style={styles.boardName}>{board.name}</Text>
+      <TouchableHighlight
+        key={board.id}
+        style={styles.boardButton}
+      >
+        <Text style={styles.boardName} numberOfLines={1}>{board.name}</Text>
       </TouchableHighlight>
     );
   }
@@ -77,6 +81,10 @@ class Boards extends Component {
       ) : (<Text style={styles.loading}>loading...</Text>);
     return (
       <View style={styles.container}>
+        <SearchBar
+          ref='searchBar'
+          placeholder='Search'
+        />
         <Text style={styles.heading}>MY BOARDS</Text>
         {boards}
       </View>
@@ -90,22 +98,30 @@ const width = Dimensions.get('window').width;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    marginTop: height * 0.1,
+    paddingTop: height * 0.03,
+    backgroundColor: '#F2F2F2',
   },
   heading: {
     fontWeight: '600',
     fontSize: 24,
+    marginTop: 20,
+    marginBottom: 10,
+    marginLeft: width * 0.02,
   },
   loading: {
     textAlign: 'center',
   },
   boardButton: {
-    height: 30,
-    paddingTop: 5,
-    paddingBottom: 5,
+    height: 40,
+    paddingVertical: 8,
+    borderWidth: 1,
+    overflow: 'hidden',
+    backgroundColor: '#FFFFFF',
   },
   boardName: {
-    marginLeft: width * 0.1,
+    marginHorizontal: width * 0.05,
+    textAlignVertical: 'center',
+    fontSize: 18,
   },
 });
 
