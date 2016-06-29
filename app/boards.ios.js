@@ -10,11 +10,13 @@ import {
   Linking,
   AsyncStorage,
   Dimensions,
+  ListView,
 } from 'react-native';
 
 var Config = require('./config');
 var base64 = require('base-64');
 var SearchBar = require('react-native-search-bar');
+var BoardPage = require('./boardPage.ios');
 
 const ACCESS_TOKEN = Config.ACCESS_TOKEN;
 
@@ -22,34 +24,39 @@ class Boards extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      boards: [],
+      dataSource: new ListView.DataSource({
+        rowHasChanged: (row1, row2) => row1 !== row2
+      }),
+      boardsLoaded: false,
+      numBoards: 0,
     }
   }
 
   componentWillMount() {
-    let p = this;
     AsyncStorage.getItem(ACCESS_TOKEN, (err, token) => {
       console.log("In boards: " + token);
-      p.getBoards(token);
+      this.getBoards(token);
     });
     // FOR TEST
-    // p.getBoards("eyJhbGciOiJIUzI1NiIsImV4cCI6MTQ2NzAxMzg4NCwiaWF0IjoxNDY3MDA3ODg0fQ.eyJuZXRpZCI6Imh5NDU2In0.Zpd6-Gvyq9wRKIF7Sg7SQzSqmUFslaYFjywZi9_IoNk");
+    // this.getBoards("eyJhbGciOiJIUzI1NiIsImV4cCI6MTQ2NzE4NDgxOSwiaWF0IjoxNDY3MTc4ODE5fQ.eyJuZXRpZCI6Imh5NDU2In0.aeDtD1Mcit7P8F77mokX0F3LIi-af2x4X8z73U0HH_E");
   }
 
   getBoards(token) {
-    let p = this;
-
     fetch(Config.serverAddress + "api/board/", {
       method: 'GET',
       headers: {
         'Authorization': 'Basic ' + base64.encode(token + ':unused'),
       },
-    }).then(function(response) {
+    }).then((response) => {
       if (response.status == 200) {
         console.log("response status is 200");
-        response.json().then(function(data) {
+        response.json().then((data) => {
           if (data.status == "OK") {
-            p.setState({boards: data.boards});
+            this.setState({
+              boardsLoaded: true,
+              numBoards: data.boards.length,
+              dataSource: this.state.dataSource.cloneWithRows(data.boards),
+            });
           }
         });
       } else {
@@ -60,14 +67,22 @@ class Boards extends Component {
     });
   }
 
-  /**
-   * Render one board.
-   */
-  renderBoard(board) {
+  goBoardPage(boardId, boardName) {
+    this.props.navigator.push({
+      title: boardName,
+      component: BoardPage,
+      navigationBarHidden: false,
+      passProps: {
+        boardId: boardId,
+      },
+    });
+  }
+
+  renderRow(board, sectionId) {
     return (
       <TouchableHighlight
-        key={board.id}
         style={styles.boardButton}
+        onPress={() => this.goBoardPage(board.id, board.name)}
       >
         <Text style={styles.boardName} numberOfLines={1}>{board.name}</Text>
       </TouchableHighlight>
@@ -75,10 +90,14 @@ class Boards extends Component {
   }
 
   render() {
-    let boards = this.state.boards.length ?
-      this.state.boards.map(board =>
-        this.renderBoard(board)
-      ) : (<Text style={styles.loading}>loading...</Text>);
+    let boards = (<Text style={styles.loading}>loading...</Text>);
+    if (this.state.boardsLoaded) {
+      if (this.state.numBoards > 0) {
+        boards = (<ListView dataSource={this.state.dataSource} renderRow={this.renderRow.bind(this)}/>);
+      } else {
+        boards = (<Text>No boards.</Text>);
+      }
+    }
     return (
       <View style={styles.container}>
         <SearchBar
@@ -112,9 +131,11 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   boardButton: {
-    height: 40,
-    paddingVertical: 8,
+    height: 50,
+    paddingVertical: 13,
     borderWidth: 1,
+    borderLeftWidth: 0,
+    borderRightWidth: 0,
     overflow: 'hidden',
     backgroundColor: '#FFFFFF',
   },

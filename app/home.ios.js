@@ -119,8 +119,8 @@ class Home extends Component {
   }
 }
 
-var height = Dimensions.get('window').height;
-var width = Dimensions.get('window').width;
+const height = Dimensions.get('window').height;
+const width = Dimensions.get('window').width;
 
 const styles = StyleSheet.create({
   backgroundImage: {
