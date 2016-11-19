@@ -31,8 +31,8 @@ class Signin extends Component {
     this.state = {
       value: {
         netid: this.props.netid,
-        // netid: "hy456",         // FOR TEST
-        // password: "123",
+        netid: "hy456",         // FOR TEST
+        password: "123",
       },
     }
   }
@@ -111,12 +111,14 @@ class Signin extends Component {
       if (response.status == 200) {
         response.json().then(function(data) {
           if (data["status"] == "OK") {   // sign in successfully
-            p.fetchAccessToken(netid, password);
-            p.props.navigator.push({
-              title: 'Boards',
-              navigationBarHidden: true,
-              component: Boards,
+            p.fetchAccessToken(netid, password).then(() => {
+              p.props.navigator.push({
+                title: 'Boards',
+                navigationBarHidden: true,
+                component: Boards,
+              });
             });
+
           } else {
             p.showErrorMessage(data["message"]);
           }
@@ -130,8 +132,9 @@ class Signin extends Component {
           }
         });
       }
+      console.log("here");
     }).catch(error => {
-      p.showErrorMessage("Network error. Please try again.");
+      p.showErrorMessage("Network error. Please try again...");
     });
   }
 

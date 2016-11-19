@@ -8,6 +8,7 @@ import {
 
 var Home = require('./app/home.ios');
 var Boards = require('./app/boards.ios');
+var BoardPage = require('./app/boardPage');
 
 
 class CoCornellApp extends Component {
@@ -24,7 +25,7 @@ class CoCornellApp extends Component {
           title: "Home",
           navigationBarHidden: true,
           component: Home,
-          // component: Boards,   // FOR TEST
+          // component: BoardPage,   // FOR TEST
         }}
       />
     );

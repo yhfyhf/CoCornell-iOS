@@ -13,6 +13,8 @@ import {
   ListView,
 } from 'react-native';
 
+import Button from 'react-native-button';
+
 var Config = require('./config');
 var base64 = require('base-64');
 var SearchBar = require('react-native-search-bar');
@@ -38,7 +40,7 @@ class Boards extends Component {
       this.getBoards(token);
     });
     // FOR TEST
-    // this.getBoards("eyJhbGciOiJIUzI1NiIsImV4cCI6MTQ2NzE4NDgxOSwiaWF0IjoxNDY3MTc4ODE5fQ.eyJuZXRpZCI6Imh5NDU2In0.aeDtD1Mcit7P8F77mokX0F3LIi-af2x4X8z73U0HH_E");
+    // this.getBoards("eyJhbGciOiJIUzI1NiIsImV4cCI6MTQ2NzQ0NDk2MywiaWF0IjoxNDY3NDM4OTYzfQ.eyJuZXRpZCI6Imh5NDU2In0.ydkEZyVKh-jb4ER49KDLaKMXH5Y3zbHfZsRfMCQQuJU");
   }
 
   getBoards(token) {
@@ -89,15 +91,20 @@ class Boards extends Component {
     );
   }
 
+  _handlePress() {
+    this.props.navigator.pop();
+  }
+
   render() {
     let boards = (<Text style={styles.loading}>loading...</Text>);
     if (this.state.boardsLoaded) {
       if (this.state.numBoards > 0) {
         boards = (<ListView dataSource={this.state.dataSource} renderRow={this.renderRow.bind(this)}/>);
       } else {
-        boards = (<Text>No boards.</Text>);
+        boards = (<Text>No board.</Text>);
       }
     }
+
     return (
       <View style={styles.container}>
         <SearchBar
@@ -106,6 +113,13 @@ class Boards extends Component {
         />
         <Text style={styles.heading}>MY BOARDS</Text>
         {boards}
+
+        <Button
+          style={{fontSize: 26, color: 'black', paddingBottom: 5}}
+          styleDisabled={{color: 'red'}}
+          onPress={() => this._handlePress()}>
+          Log Out
+        </Button>
       </View>
     )
   }
