@@ -213,7 +213,7 @@ class BoardPage extends Component {
       if (this.state.numLists > 0) {
         lists = this.state.lists.map(this.renderList.bind(this));
       } else {
-        lists = (<Text>Empty board.</Text>);
+        lists = (<Text style={styles.emptyBoard}>Empty board</Text>);
       }
     }
     return (
@@ -293,6 +293,12 @@ const styles = StyleSheet.create({
     paddingLeft: width * 0.075,
     alignItems: 'center',
     alignSelf: 'center',
+  },
+  emptyBoard: {
+    flex: 1,
+    paddingTop: 100,
+    textAlign: "center",
+    fontSize: 22,
   },
 });
 
